@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 16:03:13 by soljeong          #+#    #+#             */
-/*   Updated: 2024/04/29 18:49:03 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/04/29 19:39:23 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ int main (int argc, char *argv[])
 {
 	t_arg	*arg;
 	t_philo		**philos;
+	int	idx;
+
+	idx = 0;
 	arg = malloc(sizeof(t_arg));
 	if (!arg)
 		exit(1);
@@ -44,13 +47,19 @@ int main (int argc, char *argv[])
 		arg->num_of_must_eat = 0;
 	else if (argc == 6)
 		arg->num_of_must_eat = ft_atoi(argv[5]);
+	arg->fork = malloc(sizeof(pthread_mutex_t *) * arg->num_of_philo);
+	while (idx < arg->num_of_philo)
+	{
+		phtread_mutex_init(&(arg->fork[idx]), NULL);
+	}
 	philos = malloc(sizeof(t_philo) * arg->num_of_philo);
 	int i = 0;
 	while (i < arg->num_of_philo)
 	{
-		philos.
+		philos[i]->philo_idx = i;
 		philos[i]->last_eat = 	get_time();
 		philos[i]->num_eat = 0;
+		// 스레드는 추후 만드는 방법을 고려해본다... 함수를 안에 넣어줘야 하기 때문!
 		// philos 쓰레드 만들기! 
 	}
 	//pthread_t thread_t;

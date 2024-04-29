@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 16:00:23 by soljeong          #+#    #+#             */
-/*   Updated: 2024/04/29 18:48:50 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/04/29 19:29:17 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ typedef struct s_arg {
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	num_of_must_eat;
+	pthread_mutex_t **fork;
 } t_arg;
 
 typedef struct s_philo {
