@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 16:03:13 by soljeong          #+#    #+#             */
-/*   Updated: 2024/04/29 19:39:23 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/04/29 19:42:03 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,36 @@ double get_time()
 
 	begin = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
+t_arg *arg_init(int argc, char *argv[])
+{
+	t_arg	*arg;
+	int		i;
+
+	i = 0;
+	arg = malloc(sizeof(t_arg));
+	arg->num_of_philo = ft_atoi(argv[1]);
+	arg->time_to_die = ft_atoi(argv[2]);
+	arg->time_to_eat = ft_atoi(argv[3]);
+	arg->time_to_sleep = ft_atoi(argv[4]);
+if (argc == 5)
+		arg->num_of_must_eat = 0;
+	else if (argc == 6)
+		arg->num_of_must_eat = ft_atoi(argv[5]);
+	arg->fork = malloc(sizeof(pthread_mutex_t *) * arg->num_of_philo);
+	while (i < arg->num_of_philo)
+	{
+		phtread_mutex_init(&(arg->fork[i]), NULL);
+	}
+}
 
 int main (int argc, char *argv[])
 {
-	t_arg	*arg;
 	t_philo		**philos;
 	int	idx;
+	t_arg	*arg;
 
+	arg = arg_init(argc, argv);
 	idx = 0;
-	arg = malloc(sizeof(t_arg));
 	if (!arg)
 		exit(1);
 	if (argc != 5 && argc != 6)
@@ -39,19 +60,9 @@ int main (int argc, char *argv[])
 		write(2,"error\n",6);
 		exit(1);
 	}
-	arg->num_of_philo = ft_atoi(argv[1]);
-	arg->time_to_die = ft_atoi(argv[2]);
-	arg->time_to_eat = ft_atoi(argv[3]);
-	arg->time_to_sleep = ft_atoi(argv[4]);
-	if (argc == 5)
-		arg->num_of_must_eat = 0;
-	else if (argc == 6)
-		arg->num_of_must_eat = ft_atoi(argv[5]);
-	arg->fork = malloc(sizeof(pthread_mutex_t *) * arg->num_of_philo);
-	while (idx < arg->num_of_philo)
-	{
-		phtread_mutex_init(&(arg->fork[idx]), NULL);
-	}
+
+	
+
 	philos = malloc(sizeof(t_philo) * arg->num_of_philo);
 	int i = 0;
 	while (i < arg->num_of_philo)
