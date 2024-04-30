@@ -1,9 +1,12 @@
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread
 
 SRCS = main.c\
 		ft_atoi.c\
-		ft_isdigit.c
+		ft_isdigit.c\
+		ft_msleep.c\
+		get_time.c\
+		print_philo.c
 
 OBJS = $(SRCS:.c=.o)
 
