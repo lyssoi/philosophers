@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_philo.c                                      :+:      :+:    :+:   */
+/*   mutex_change.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/30 16:53:47 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/02 19:43:20 by soljeong         ###   ########.fr       */
+/*   Created: 2024/05/02 19:44:58 by soljeong          #+#    #+#             */
+/*   Updated: 2024/05/02 19:46:26 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <unistd.h>
 
-void	print_philo(t_arg *arg, t_philo *philo, char *msg, long time)
+void	mutex_end_change(pthread_mutex_t *mutex, int *flag)
 {
-	if (end_flag_check(arg) == IS_END && ft_strncmp(msg, "is died", 8))
-		return ;
-	pthread_mutex_lock(arg->print_mutex);
-	printf("%ld %d %s\n",time - arg->start_time, philo->philo_idx, msg);
-	pthread_mutex_unlock(arg->print_mutex);
+	pthread_mutex_lock(mutex);
+	*flag = IS_END;
+	pthread_mutex_unlock(mutex);
 }

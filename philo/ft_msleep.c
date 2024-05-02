@@ -6,21 +6,33 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 17:05:27 by soljeong          #+#    #+#             */
-/*   Updated: 2024/04/30 19:07:06 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/02 20:29:39 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include "unistd.h"
 
-void	ft_msleep(t_arg *arg, int sleep_time)
+void	ft_msleep(t_philo *philo, int sleep_time)
 {
-	(void)arg;
-	long start_time = get_time();
+	long start_time;
+	long last_eat_time;
+
+	start_time = get_time();
+	last_eat_time = last_eat_check(philo);
+	if (start_time + sleep_time - last_eat_time < philo->arg->time_to_die)
+		usleep(sleep_time * 900);
+	else
+		usleep((get_time() - last_eat_time) * 900);
 	while (1)
 	{
 		if (get_time() - start_time  >= sleep_time)
-			break;
+			return ;
+		if (get_time() - last_eat_time>= philo->arg->time_to_die)
+		{
+			mutex_end_change(philo->arg->end_mutex, &(philo->arg->end_flag));
+			return ;
+		}
 		usleep(100);
 	}
 }

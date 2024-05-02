@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_philo.c                                      :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/30 16:53:47 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/02 19:43:20 by soljeong         ###   ########.fr       */
+/*   Created: 2023/10/11 20:36:55 by soljeong          #+#    #+#             */
+/*   Updated: 2024/05/02 19:32:37 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
-#include <unistd.h>
-
-void	print_philo(t_arg *arg, t_philo *philo, char *msg, long time)
+int	ft_strncmp(const char *s1, const char *s2, int n)
 {
-	if (end_flag_check(arg) == IS_END && ft_strncmp(msg, "is died", 8))
-		return ;
-	pthread_mutex_lock(arg->print_mutex);
-	printf("%ld %d %s\n",time - arg->start_time, philo->philo_idx, msg);
-	pthread_mutex_unlock(arg->print_mutex);
+	int			i;
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	i = 0;
+	str1 = (unsigned char *) s1;
+	str2 = (unsigned char *) s2;
+	if (n == 0)
+		return (0);
+	while (str1[i] && str2[i] && str1[i] == str2[i] && i < n - 1)
+		i++;
+	return (str1[i] - str2[i]);
 }
