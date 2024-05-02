@@ -24,17 +24,16 @@ t_arg *arg_init(int argc, char *argv[])
 
 	i = 0;
 	arg = malloc(sizeof(t_arg));
-	(void)argc;
-	(void)argv;
 	if (!arg)
 		exit(1);
 	arg->num_of_philo = ft_atoi(argv[1]);
 	arg->time_to_die = ft_atoi(argv[2]);
 	arg->time_to_eat = ft_atoi(argv[3]);
 	arg->time_to_sleep = ft_atoi(argv[4]);
+	arg->end_flag = IS_NOT_END;
 	arg->start_time = get_time();
 	if (argc == 5)
-		arg->num_of_must_eat = 0;
+		arg->num_of_must_eat = -1;
 	else if (argc == 6)
 		arg->num_of_must_eat = ft_atoi(argv[5]);
 	arg->fork_mutex = malloc(sizeof(pthread_mutex_t *) * arg->num_of_philo);
@@ -46,7 +45,19 @@ t_arg *arg_init(int argc, char *argv[])
 		pthread_mutex_init(arg->fork_mutex[i], NULL);
 		i++;
 	}
+	arg->print_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(arg->print_mutex, NULL);
 	return (arg);
+}
+
+int print_check(t_arg *arg)
+{
+	int print_value;
+
+	pthread_mutex_lock(arg->print_mutex);
+	print_value = arg->print_value;
+	pthread_mutex_unlock(arg->print_mutex);
+	return print_value;
 }
 
 int	fork_check(t_arg *arg, int fork)
@@ -73,11 +84,13 @@ void	thread_philo(t_philo *philo)
 		ft_msleep(arg, arg->time_to_eat);
 	while(1)
 	{
-		if (philo->last_eat_time - get_time() >= arg->time_to_die)
-		{
-			print_philo(arg, philo, "died", get_time());
-			exit(0);
-		}
+		if (arg->end_flag == IS_END)
+			return(0) ;
+		//if (get_time() - philo->last_eat_time >= arg->time_to_die)
+		//{
+		//	print_philo(arg, philo, "died", get_time());
+		//	exit(0);
+		//}
 		if (fork_check(arg, philo->left) == NOT_IN_USE)
 		{
 			pthread_mutex_lock(philo->arg->fork_mutex[philo->left]);
@@ -85,14 +98,16 @@ void	thread_philo(t_philo *philo)
 			print_philo(arg,philo,"has taken a fork", get_time());
 			while (1)
 			{
-				if (philo->last_eat_time - get_time() >= arg->time_to_die)
-				{
-					print_philo(arg, philo, "died", get_time());
-					exit(0);
-				}
+				//if ( get_time() - philo->last_eat_time >= arg->time_to_die)
+				//{
+				//	print_philo(arg, philo, "died", get_time());
+				//	exit(0);
+				//}
 				usleep(100);
 				if (fork_check(arg, philo->right) == NOT_IN_USE)
 					break;
+				if (arg->end_flag == IS_END)
+					exit(0) ;
 			}
 			//if (philo->arg->fork[philo->right] == NOT_IN_USE)
 			//{
@@ -106,11 +121,41 @@ void	thread_philo(t_philo *philo)
 			//}
 			philo->arg->fork[philo->left] = NOT_IN_USE;
 			pthread_mutex_unlock(philo->arg->fork_mutex[philo->left]);
-			philo->last_eat_time = get_time();
+			philo->last_eat_time = get_time(); // -> last eat에서 문제가 있음 얘를 뮤텍스로 걸수도 없고
+			philo->num_eat++;
+			if (philo->num_eat == philo->arg->num_of_must_eat)
+			{
+				return ;
+			}
 			print_philo(arg,philo,"is sleeping", get_time());
 			ft_msleep(arg,arg->time_to_sleep);
 			print_philo(arg,philo,"is thinking", get_time());
 		}
+	}
+}
+
+void	monitoring_thread(t_philo **philos)
+{
+	int	i;
+	int num;
+
+	i = 0;
+	num = philos[0]->arg->num_of_philo;
+	//bit 연산해야될듯...??
+	while (1)
+	{
+		usleep(100);
+		if (get_time() - philos[i]->last_eat_time >= philos[i]->arg->time_to_die)
+		{
+			print_philo(philos[i]->arg, philos[i], "is died", get_time());
+			philos[i]->arg->end_flag = IS_END; 
+			 // print에 대한 락을 걸고, 락을 풀지 않기.
+		}
+		if (philos[i]->arg->end_flag == IS_END)
+			break;
+		i++;
+		if (i >= num)
+			i = 0;
 	}
 }
 
@@ -119,23 +164,25 @@ int main (int argc, char *argv[])
 	t_philo		**philos;
 	int			idx;
 	t_arg		*arg;
+	pthread_t	monitor;
 
-	arg = arg_init(argc, argv);
-	idx = 0;
-	if (!arg)
-		exit(1);
 	if (argc != 5 && argc != 6)
 	{
 		write(2,"error\n",6);
 		exit(1);
 	}
+	arg = arg_init(argc, argv);
+	idx = 0;
+	if (!arg)
+		exit(1);
 	philos = malloc(sizeof(t_philo *) * arg->num_of_philo);
 	int i = 0;
+	monitor = malloc(sizeof(pthread_t));
 	while (i < arg->num_of_philo)
 	{
 		philos[i] = malloc(sizeof(t_philo));
 		philos[i]->philo_idx = i + 1;
-		philos[i]->last_eat_time = 0;
+		philos[i]->last_eat_time = get_time();
 		philos[i]->num_eat = 0;
 		philos[i]->left = i;
 		philos[i]->right = (i + 1) % arg->num_of_philo;
@@ -144,6 +191,14 @@ int main (int argc, char *argv[])
 		pthread_create(&(philos[i]->thread),NULL,(void *)thread_philo,(void *)philos[i]);
 		i++;
 	}
+	pthread_create(&monitor, NULL, (void *)monitoring_thread, philos);
+	i = 0;
+	while (i < arg->num_of_philo)
+	{
+		pthread_join(&(philos[i]->thread), NULL);
+		i++;
+	}
+	pthread_join(&monitor, NULL);
 	while (1)
 		;
 	// pthread_join해서 기다렸다가 회수함

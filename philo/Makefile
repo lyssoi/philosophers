@@ -1,5 +1,5 @@
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread
+CFLAGS =  -g3 -fsanitize=thread
 
 SRCS = main.c\
 		ft_atoi.c\

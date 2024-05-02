@@ -20,15 +20,23 @@ enum {
 	NOT_IN_USE
 };
 
+enum {
+	IS_END,
+	IS_NOT_END
+};
+
 typedef struct s_arg {
 	int				num_of_philo;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num_of_must_eat;
-	long			start_time; //start_time
+	long			start_time;
+	int				end_flag;
 	int				*fork;
 	pthread_mutex_t	**fork_mutex;
+	pthread_mutex_t *print_mutex;
+	int				print_value;
 } t_arg;
 
 typedef struct s_philo {
