@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 20:00:21 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/02 20:01:36 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/08 17:58:05 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@ int	right_fork_check(t_arg *arg, t_philo *philo)
 	{
 		if (end_flag_check_in_thread(philo, IN_USE, NOT_IN_USE))
 			return (0);
-		if (philo->arg->num_of_philo != 1 && fork_check(arg, philo->right) == NOT_IN_USE)
-			break;
+		if (philo->arg->num_of_philo != 1 \
+		&& fork_check(arg, philo->right) == NOT_IN_USE)
+			break ;
 		usleep(100);
 	}
 	return (1);
@@ -30,7 +31,7 @@ void	fork_chage_use(t_philo *philo, int idx)
 {
 	pthread_mutex_lock(philo->arg->fork_mutex[idx]);
 	philo->arg->fork[idx] = IN_USE;
-	print_philo(philo->arg,philo,"has taken a fork", get_time());
+	print_philo(philo->arg, philo, "has taken a fork");
 }
 
 void	fork_chag_not_use(t_philo *philo, int idx)

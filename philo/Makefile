@@ -1,5 +1,5 @@
 NAME = philo
-CFLAGS = #-Wall -Wextra -Werror #-g3 -fsanitize=address  #-g3 -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror #-g3 -fsanitize=address
 
 SRCS = main.c\
 		ft_atoi.c\
@@ -12,7 +12,11 @@ SRCS = main.c\
 		thread_philo.c\
 		ft_strncmp.c\
 		mutex_change.c\
-		fork.c
+		fork.c\
+		init.c\
+		monitoring_thread.c\
+		free.c\
+		eating.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -24,6 +28,7 @@ clean:
 	rm -f $(OBJS)
 
 fclean:
+	rm -f $(NAME)
 	make clean
 
 re: 

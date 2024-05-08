@@ -6,13 +6,13 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 15:43:44 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/02 19:47:41 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/08 17:59:45 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int end_flag_check_in_thread(t_philo *philo, int left_use, int right_use)
+int	end_flag_check_in_thread(t_philo *philo, int left_use, int right_use)
 {
 	t_arg	*arg;
 

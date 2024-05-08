@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/30 17:05:27 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/02 20:29:39 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/08 17:54:15 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 
 void	ft_msleep(t_philo *philo, int sleep_time)
 {
-	long start_time;
-	long last_eat_time;
+	long	start_time;
+	long	last_eat_time;
+	long	curr_time;
 
 	start_time = get_time();
 	last_eat_time = last_eat_check(philo);
@@ -26,9 +27,10 @@ void	ft_msleep(t_philo *philo, int sleep_time)
 		usleep((get_time() - last_eat_time) * 900);
 	while (1)
 	{
-		if (get_time() - start_time  >= sleep_time)
+		curr_time = get_time();
+		if (curr_time - start_time >= sleep_time)
 			return ;
-		if (get_time() - last_eat_time>= philo->arg->time_to_die)
+		if (curr_time - last_eat_time >= philo->arg->time_to_die)
 		{
 			mutex_end_change(philo->arg->end_mutex, &(philo->arg->end_flag));
 			return ;
