@@ -65,43 +65,69 @@ t_arg *arg_init(int argc, char *argv[])
 	return (arg);
 }
 
+int monitoring_complete(int endphilo, int num, t_arg *arg)
+{
+	if (endphilo == num)
+	{
+		mutex_end_change(arg->end_mutex, &(arg->end_flag));
+		return (1);
+	}
+	return (0);
+}
+
+
+int compare_num_eat(t_philo *philo)
+{
+	int num_eat;
+
+	num_eat = num_eat_check(philo);
+	if (num_eat == philo->arg->num_of_must_eat)
+		return (1);
+	return (0);
+}
+
+int	monitoring_die(t_philo *philo)
+{
+	long	last_eat_time;
+
+
+	last_eat_time = last_eat_check(philo);
+	if (get_time() - last_eat_time >= philo->arg->time_to_die)
+	{
+		print_philo(philo->arg, philo, "is died", get_time());
+		mutex_end_change(philo->arg->end_mutex, &(philo->arg->end_flag));\
+		return (1);
+	}
+	return (0);
+}
+
 
 void	monitoring_thread(t_philo **philos)
 {
 	int	i;
 	int	num;
 	int	endphilo;
-	long last_eat_time;
-	int	num_eat;
+	t_arg *arg;
 
 	i = 0;
-	num = philos[0]->arg->num_of_philo;
+	arg = philos[0]->arg;
+	num = arg->num_of_philo;
 	endphilo = 0;
-	pthread_mutex_lock(philos[0]->arg->thread_make_mutex);
-	pthread_mutex_unlock(philos[0]->arg->thread_make_mutex);
+	pthread_mutex_lock(arg->thread_make_mutex);
+	pthread_mutex_unlock(arg->thread_make_mutex);
 	while (1)
 	{
-		num_eat = num_eat_check(philos[i]);
-		if (num_eat == philos[i]->arg->num_of_must_eat)
-			endphilo++;
-		last_eat_time = last_eat_check(philos[i]);
-		if (get_time() - last_eat_time >= philos[i]->arg->time_to_die)
+		while (i < num)
 		{
-			print_philo(philos[i]->arg, philos[i], "is died", get_time());
-			mutex_end_change(philos[i]->arg->end_mutex, &(philos[i]->arg->end_flag));
-			return ;
-		}
-		i++;
-		if (i >= num)
-		{
-			i = 0;
-			if (endphilo == num)
-			{
-				mutex_end_change(philos[i]->arg->end_mutex, &(philos[i]->arg->end_flag));
+			endphilo+=compare_num_eat(philos[i]);
+			if (monitoring_die(philos[i]))
 				return ;
-			}
-			endphilo = 0;
+			i++;
 		}
+		if (monitoring_complete(endphilo, num, arg))
+			return ;
+		i = 0;
+		endphilo = 0;
 		usleep(100);
 	}
 }
@@ -113,7 +139,6 @@ t_philo	**philo_init(t_arg *arg)
 
 	i = 0;
 	philos = malloc(sizeof(t_philo *) * arg->num_of_philo);
-	
 	while (i < arg->num_of_philo)
 	{
 		philos[i] = malloc(sizeof(t_philo));
