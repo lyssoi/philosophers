@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 16:00:23 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/08 17:58:16 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/09 12:56:45 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ enum {
 enum {
 	IS_NOT_END,
 	IS_END,
+};
+
+enum {
+	ERROR,
+	SUCCESS
 };
 
 typedef struct s_arg {
@@ -76,4 +81,11 @@ pthread_mutex_t	*make_mutex(void);
 void			monitoring_thread(t_philo **philos);
 void			free_all(t_arg *arg, t_philo **philos);
 void			eating(t_philo *philo);
+int				print_error(void);
+void			mutex_destroy_and_free(pthread_mutex_t *mutex);
+void			fork_mutex_free(t_arg *arg, int i);
+void			arg_mutex_free(t_arg *arg, int errorno);
+void			free_philo(t_philo *philo);
+void			arg_free(t_arg *arg, int errorno);
+void			free_philos(t_philo **philos, int i);
 #endif

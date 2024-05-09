@@ -1,5 +1,5 @@
 NAME = philo
-CFLAGS = -Wall -Wextra -Werror #-g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread #-g3 -fsanitize=address
 
 SRCS = main.c\
 		ft_atoi.c\
@@ -14,9 +14,12 @@ SRCS = main.c\
 		mutex_change.c\
 		fork.c\
 		init.c\
+		init_philo.c\
 		monitoring_thread.c\
 		free.c\
-		eating.c
+		free_philo.c\
+		eating.c\
+		print_error.c
 
 OBJS = $(SRCS:.c=.o)
 

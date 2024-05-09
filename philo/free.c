@@ -6,40 +6,52 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 13:43:21 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/08 13:56:55 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/09 12:54:12 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <stdlib.h>
 
-static void	mutex_destroy_and_free(pthread_mutex_t *mutex);
-
 void	free_all(t_arg *arg, t_philo **philos)
 {
-	int	i;
-
-	i = 0;
-	while (i < arg->num_of_philo)
-	{
-		pthread_join(philos[i]->thread, NULL);
-		mutex_destroy_and_free(philos[i]->last_eat_time_nutex);
-		mutex_destroy_and_free(philos[i]->num_eat_mutex);
-		mutex_destroy_and_free(arg->fork_mutex[i]);
-		free(philos[i]);
-		i++;
-	}
-	free(arg->fork_mutex);
-	mutex_destroy_and_free(arg->end_mutex);
-	mutex_destroy_and_free(arg->thread_make_mutex);
-	mutex_destroy_and_free(arg->print_mutex);
-	free(philos);
+	free_philos(philos, arg->num_of_philo - 1);
+	arg_mutex_free(arg, SUCCESS);
 	free(arg->fork);
 	free(arg);
 }
 
-static void	mutex_destroy_and_free(pthread_mutex_t *mutex)
+void	arg_mutex_free(t_arg *arg, int errorno)
+{
+	if (errorno == SUCCESS)
+		fork_mutex_free(arg, arg->num_of_philo - 1);
+	if (arg->print_mutex)
+		mutex_destroy_and_free(arg->print_mutex);
+	if (arg->end_mutex)
+		mutex_destroy_and_free(arg->end_mutex);
+	if (arg->thread_make_mutex)
+		mutex_destroy_and_free(arg->thread_make_mutex);
+}
+
+void	mutex_destroy_and_free(pthread_mutex_t *mutex)
 {
 	pthread_mutex_destroy(mutex);
 	free(mutex);
+}
+
+void	fork_mutex_free(t_arg *arg, int i)
+{
+	while (i >= 0)
+	{
+		mutex_destroy_and_free(arg->fork_mutex[i]);
+		i--;
+	}
+	free(arg->fork_mutex);
+}
+
+void	arg_free(t_arg *arg, int errorno)
+{
+	arg_mutex_free(arg, errorno);
+	free(arg->fork);
+	free(arg);
 }

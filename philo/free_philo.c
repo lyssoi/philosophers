@@ -1,27 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_philo.c                                      :+:      :+:    :+:   */
+/*   free_philo.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/30 16:53:47 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/09 12:57:02 by soljeong         ###   ########.fr       */
+/*   Created: 2024/05/09 11:44:02 by soljeong          #+#    #+#             */
+/*   Updated: 2024/05/09 11:45:46 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <unistd.h>
+#include <stdlib.h>
 
-void	print_philo(t_arg *arg, t_philo *philo, char *msg)
+void	free_philo(t_philo *philo)
 {
-	(void)time;
-	pthread_mutex_lock(arg->print_mutex);
-	if (end_flag_check(arg) == IS_END && ft_strncmp(msg, "is died", 8) != 0)
+	if (philo->last_eat_time_nutex)
+		mutex_destroy_and_free(philo->last_eat_time_nutex);
+	if (philo->num_eat_mutex)
+		mutex_destroy_and_free(philo->num_eat_mutex);
+	if (philo->thread)
+		pthread_join(philo->thread, NULL);
+	free(philo);
+}
+
+void	free_philos(t_philo **philos, int i)
+{
+	while (i >= 0)
 	{
-		pthread_mutex_unlock(arg->print_mutex);
-		return ;
+		free_philo(philos[i]);
+		i--;
 	}
-	printf("%ld %d %s\n", (get_time() - arg->start_time), philo->philo_idx, msg);
-	pthread_mutex_unlock(arg->print_mutex);
+	free(philos);
 }

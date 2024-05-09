@@ -6,7 +6,7 @@
 /*   By: soljeong <soljeong@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 17:15:33 by soljeong          #+#    #+#             */
-/*   Updated: 2024/05/08 17:57:40 by soljeong         ###   ########.fr       */
+/*   Updated: 2024/05/09 12:50:10 by soljeong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	thread_philo(t_philo *philo)
 				return ;
 			fork_chage_use(philo, philo->right);
 			eating(philo);
-			if (end_flag_check_in_thread(philo, IN_USE, IN_USE))
+			if (end_flag_check_in_thread(philo, NOT_IN_USE, NOT_IN_USE))
 				return ;
 			print_philo(philo->arg, philo, "is sleeping");
 			ft_msleep(philo, philo->arg->time_to_sleep);
